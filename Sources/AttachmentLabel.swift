@@ -12,7 +12,7 @@ open class AttachmentLabel: UILabel {
     private let textStorage = NSTextStorage()
     private let layoutManager = NSLayoutManager()
     private let textContainer = NSTextContainer(size: .zero)
-    private let attachedViews = NSMapTable<AnyObject, UIView>.strongToStrongObjects()
+    private let attachedViews = NSMapTable<SubviewTextAttachment, UIView>.strongToStrongObjects()
     private var needsTextStorageUpdate = true
 
     public override init(frame: CGRect) {
@@ -95,18 +95,27 @@ open class AttachmentLabel: UILabel {
         self.layoutManager.drawGlyphs(forGlyphRange: glyphRange, at: offset)
     }
 
-    open override var intrinsicContentSize: CGSize {
-        return self.sizeThatFits(CGSize(width: self.preferredMaxLayoutWidth > 0.0 ? self.preferredMaxLayoutWidth : UIView.noIntrinsicMetric,
-                                        height: UIView.noIntrinsicMetric))
+    // UILabel derives intrinsicContentSize from this method using its Auto Layout width,
+    // so multi-line labels wrap correctly without an explicit preferredMaxLayoutWidth.
+    open override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+        let size = self.measuredTextSize(fitting: bounds.size, numberOfLines: numberOfLines)
+        return CGRect(origin: bounds.origin, size: size)
     }
 
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
-        self.updateTextContainerSize(CGSize(width: size.width > 0.0 ? size.width : CGFloat.greatestFiniteMagnitude,
-                                            height: CGFloat.greatestFiniteMagnitude))
+        return self.measuredTextSize(fitting: CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude),
+                                     numberOfLines: self.numberOfLines)
+    }
+
+    private func measuredTextSize(fitting size: CGSize, numberOfLines: Int) -> CGSize {
+        let width = size.width > 0.0 && size.width.isFinite ? size.width : CGFloat.greatestFiniteMagnitude
+        let height = size.height > 0.0 && size.height.isFinite ? size.height : CGFloat.greatestFiniteMagnitude
+        self.updateTextContainerSize(CGSize(width: width, height: height), numberOfLines: numberOfLines)
         self.updateTextStorageIfNeeded()
         self.layoutManager.ensureLayout(for: self.textContainer)
+        // Centered or right-aligned lines are offset inside the container, so only the size is meaningful.
         let usedRect = self.layoutManager.usedRect(for: self.textContainer)
-        return CGSize(width: ceil(usedRect.maxX), height: ceil(usedRect.maxY))
+        return CGSize(width: ceil(usedRect.width), height: ceil(usedRect.height))
     }
 
     private func invalidateTextLayout() {
@@ -126,11 +135,11 @@ open class AttachmentLabel: UILabel {
         self.updateAttachedSubviews()
     }
 
-    private func updateTextContainerSize(_ size: CGSize) {
+    private func updateTextContainerSize(_ size: CGSize, numberOfLines: Int? = nil) {
         self.textContainer.size = CGSize(width: max(size.width, 0.0),
                                          height: max(size.height, 0.0))
         self.textContainer.lineBreakMode = self.lineBreakMode
-        self.textContainer.maximumNumberOfLines = self.numberOfLines
+        self.textContainer.maximumNumberOfLines = numberOfLines ?? self.numberOfLines
     }
 
     private var effectiveAttributedText: NSAttributedString {
@@ -171,7 +180,7 @@ open class AttachmentLabel: UILabel {
         let offset = self.textDrawingOffset(in: self.bounds)
 
         for (attachment, range) in self.textStorage.subviewAttachmentRanges {
-            guard let view = self.attachedViews.object(forKey: attachment.viewProvider) else {
+            guard let view = self.attachedViews.object(forKey: attachment), view.superview === self else {
                 continue
             }
             guard let rect = self.boundingRect(forAttachmentCharacterAt: range.location) else {

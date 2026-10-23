@@ -7,26 +7,35 @@
 
 import UIKit
 
-func attachmentProviders(in attachedViews: NSMapTable<AnyObject, UIView>) -> [SubviewTextAttachmentProvider] {
-    return Array(attachedViews.keyEnumerator()) as? [SubviewTextAttachmentProvider] ?? []
-}
-
-func reconcileAttachedViews(_ attachedViews: NSMapTable<AnyObject, UIView>,
+func reconcileAttachedViews(_ attachedViews: NSMapTable<SubviewTextAttachment, UIView>,
                             attachments: [SubviewTextAttachment],
                             in containerView: UIView) {
-    for provider in attachmentProviders(in: attachedViews) {
-        if attachments.contains(where: { $0.viewProvider === provider }) == false {
-            attachedViews.object(forKey: provider)?.removeFromSuperview()
-            attachedViews.removeObject(forKey: provider)
+    let currentAttachments = Set(attachments.map(ObjectIdentifier.init))
+    let cachedAttachments = attachedViews.keyEnumerator().compactMap { $0 as? SubviewTextAttachment }
+
+    for attachment in cachedAttachments where currentAttachments.contains(ObjectIdentifier(attachment)) == false {
+        // The same view may have been moved into another container that now owns it.
+        if let view = attachedViews.object(forKey: attachment), view.superview === containerView {
+            view.removeFromSuperview()
         }
+        attachedViews.removeObject(forKey: attachment)
     }
 
-    for attachment in attachments where attachedViews.object(forKey: attachment.viewProvider) == nil {
+    for attachment in attachments {
+        if let view = attachedViews.object(forKey: attachment) {
+            if view.superview == nil {
+                hideAttachmentView(view)
+                containerView.addSubview(view)
+            }
+            continue
+        }
+
         let view = attachment.viewProvider.instantiateView(for: attachment, in: containerView)
         view.translatesAutoresizingMaskIntoConstraints = true
         view.autoresizingMask = []
+        hideAttachmentView(view)
         containerView.addSubview(view)
-        attachedViews.setObject(view, forKey: attachment.viewProvider)
+        attachedViews.setObject(view, forKey: attachment)
     }
 }
 

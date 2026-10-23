@@ -19,7 +19,7 @@ open class AttachmentTextView: UITextView, NSLayoutManagerDelegate, NSTextStorag
         self.commonInit()
     }
 
-    private let attachedViews = NSMapTable<AnyObject, UIView>.strongToStrongObjects()
+    private let attachedViews = NSMapTable<SubviewTextAttachment, UIView>.strongToStrongObjects()
 
     private func commonInit() {
         self.layoutManager.delegate = self
@@ -46,7 +46,7 @@ open class AttachmentTextView: UITextView, NSLayoutManagerDelegate, NSTextStorag
         let scaleFactor = self.window?.screen.scale ?? UIScreen.main.scale
 
         for (attachment, range) in self.textStorage.subviewAttachmentRanges {
-            guard let view = self.attachedViews.object(forKey: attachment.viewProvider) else {
+            guard let view = self.attachedViews.object(forKey: attachment) else {
                 continue
             }
             guard view.superview === self else {
@@ -100,9 +100,10 @@ open class AttachmentTextView: UITextView, NSLayoutManagerDelegate, NSTextStorag
                             didProcessEditing editedMask: NSTextStorage.EditActions,
                             range editedRange: NSRange,
                             changeInLength delta: Int) {
+        // The layout manager has not processed this edit yet, so glyph geometry is stale here.
         if editedMask.contains(.editedAttributes) || editedMask.contains(.editedCharacters) {
             self.updateAttachedSubviews()
-            self.layoutAttachedSubviews()
+            self.setNeedsLayout()
         }
     }
 
