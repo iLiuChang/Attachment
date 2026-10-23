@@ -1,11 +1,13 @@
 # Attachment
 
-Embed arbitrary `UIView` subviews inline with text using `NSAttributedString` — mix tags, badges, icons, or any custom views directly into your text content.
+![Swift](https://img.shields.io/badge/Swift-5.0%2B-orange.svg)
+![Platform](https://img.shields.io/badge/Platform-iOS%2011.0%2B-lightgrey.svg)
+![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![SPM](https://img.shields.io/badge/SPM-supported-brightgreen.svg)
+![CocoaPods](https://img.shields.io/badge/CocoaPods-supported-blueviolet.svg)
 
-![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B-blue)
-![Swift](https://img.shields.io/badge/Swift-5.0%2B-orange)
-![CocoaPods](https://img.shields.io/badge/CocoaPods-compatible-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
+Embed arbitrary `UIView` subviews inline with text using `NSAttributedString` — mix tags, badges, icons, or any custom views directly into your text content.
 
 ## Components
 
@@ -21,6 +23,33 @@ Embed arbitrary `UIView` subviews inline with text using `NSAttributedString` �
 ```ruby
 pod 'Attachment'
 ```
+
+Then run:
+
+```bash
+pod install
+```
+
+### Swift Package Manager
+
+In Xcode: **File → Add Packages…** and enter:
+
+```
+https://github.com/iLiuChang/Attachment.git
+```
+
+Or add it to your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/iLiuChang/Attachment.git", from: "1.1.0")
+]
+```
+
+### Manual
+
+1. Download the files in the `Sources` folder
+2. Drag them into your Xcode project
 
 ## Usage
 
@@ -70,9 +99,8 @@ SubviewTextAttachment(viewProvider: SubviewTextAttachmentProvider)
 
 ## Requirements
 
-- iOS 10.0+
+- iOS 11.0+
 - Swift 5.0+
-- Xcode 14+
 
 ## License
 
