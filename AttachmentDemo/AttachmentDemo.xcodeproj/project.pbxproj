@@ -64,7 +64,7 @@
 		2855134E2FC07500000717C9 /* AttachmentDemo */ = {
 			isa = PBXGroup;
 			children = (
-				2855135C2FC0751E000717C9 /* Source */,
+				2855135C2FC0751E000717C9 /* Sources */,
 				285513442FC07500000717C9 /* AppDelegate.swift */,
 				285513452FC07500000717C9 /* Assets.xcassets */,
 				285513462FC07500000717C9 /* Info.plist */,
@@ -75,7 +75,7 @@
 			path = AttachmentDemo;
 			sourceTree = "<group>";
 		};
-		2855135C2FC0751E000717C9 /* Source */ = {
+		2855135C2FC0751E000717C9 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				285513572FC0751E000717C9 /* AttachmentLabel.swift */,
@@ -84,8 +84,8 @@
 				2855135A2FC0751E000717C9 /* SubviewTextAttachment.swift */,
 				2855135B2FC0751E000717C9 /* SubviewTextAttachmentProvider.swift */,
 			);
-			name = Source;
-			path = ../Source;
+			name = Sources;
+			path = ../Sources;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */

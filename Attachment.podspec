@@ -5,9 +5,10 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/iLiuChang/Attachment"
   s.license      = "MIT"
   s.authors      = { "iLiuChang" => "iliuchang@foxmail.com" }
-  s.platform     = :ios, "10.0"
+  s.platform     = :ios, "11.0"
   s.source       = { :git => "https://github.com/iLiuChang/Attachment.git", :tag => s.version }
   s.requires_arc = true
   s.swift_version = "5.0"
-  s.source_files = "Source/*.{swift}"
+  s.source_files = "Sources/*.{swift}"
+  s.resource_bundles = { 'Attachment' => ['Sources/PrivacyInfo.xcprivacy'] }
 end
