@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Attachment"
-  s.version      = "1.0.0"
+  s.version      = "1.1.0"
   s.summary      = "Use NSAttributedString to add subviews to UILabel or UITextView."
   s.homepage     = "https://github.com/iLiuChang/Attachment"
   s.license      = "MIT"
